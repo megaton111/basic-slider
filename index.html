@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>basic slider</title>
+	<link rel="stylesheet" type="text/css" href="http://megaton111.cafe24.com/study/2016/source/css/common.css" />
+	<link rel="stylesheet" href="style.css">
+	<script src="slider.js"></script>
+	<style>
+		
+		.wrap{max-width:500px; margin:0 auto; padding:50px; font-family:Helvetica arial sans-serif;}
+		.bn_news{}
+		.bn_news li{position:relative; width:100%; height:0; padding-bottom:100%;}
+		.bn_news li:nth-child(1){background-color:purple;}
+		.bn_news li:nth-child(2){background-color:indianred;}
+		.bn_news li:nth-child(3){background-color:#4e70cc;}
+		.bn_news li:nth-child(4){background-color:#96ab6b;}
+		.bn_news li:nth-child(5){background-color:#ca88b6;}
+		.bn_news li div{position:absolute; left:50%; top:50%; transform:translateX( -50% ) translateY( -50% ); color:#fff; }
+		.bn_news li div strong{display:block; margin-bottom:10px; font-size:17px;}
+		.bn_news li div p{font-size:12px; line-height:1.6em; color:#d0d0d0;}
+
+		.wrap_slider{
+			position:relative;
+			-webkit-box-sizing:border-box;
+			-moz-box-sizing:border-box;
+			box-sizing:border-box;
+			overflow: hidden;
+		}
+		.wrap_slider *{
+			-webkit-box-sizing:border-box;
+			-moz-box-sizing:border-box;
+			box-sizing:border-box;
+		}
+		.container_slide{
+			position:relative;
+		}
+		.container_slide > li{
+			position:absolute;
+			left:0;
+			top:0;
+		}
+		.container_slide > li:first-child{
+			visibility:visible;
+			opacity:1;
+		}
+		.btn_paging{
+			position:absolute;
+			left:0;
+			bottom:20px;
+			width:100%;
+			text-align:center;
+			font-size:0;
+			z-index:99999;
+		}
+		.btn_paging button{
+			display:inline-block;
+			padding:5px 10px;
+			font-size:14px;
+			font-weight:bold;
+			border:1px solid transparent;
+			outline:0;
+		}
+		.btn_paging button.active{
+			color:#fff;
+		}
+		.btn_move button{
+			display:block;
+			position:absolute;
+			top:50%;
+			width:50px;
+			height:50px;
+			margin-top:-25px;
+			z-index:9999;
+		}
+		.btn_move button.btn_prev{
+			left:0;
+		}
+		.btn_move button.btn_next{
+			right:0;
+		}
+		/* .btn_paging button:hover,
+		.btn_paging button:focus{
+			color:#fff;
+		} */
+
+	</style>
+</head>
+<body>
+		
+	<div class="wrap">
+		
+		<div id="wrapSlider" class="wrap_slider">
+			<ul class="container_slide bn_news">
+				<li class="item_slide">
+					<div>
+						<strong>Today News 1</strong>
+						<p>He hardly had time to yank the gold from round his neck before being thrown back on the blocks. Luckily for him, he's the greatest swimmer of all time. So qualifying in second place was not an issue. He'll be back tomorrow, folks.</p>
+					</div>
+				</li>
+				<li class="item_slide">
+					<div>
+						<strong>Today News 2</strong>
+						<p>Michael Phelps will be back again tonight. But for a few short minutes the fastest women over 100m meters of water will have complete control of the pool. Can Australian Cate Campbell shave off yet more miliseconds from her WR? </p>
+					</div>
+				</li>
+				<li class="item_slide">
+					<div>
+						<strong>Today News 3</strong>
+						<p>Michael Phelps gave another masterclass in the pool, winning medal number 22 in the process - his fourth of Rio 2016. With two more possible medals, we've run out of adjectives and superlatives. Just...Phelps. </p>
+					</div>
+				</li>
+				<li class="item_slide">
+					<div>
+						<strong>Today News 4</strong>
+						<p>Thiago Pereira is searching for his first Olympic gold medal as he takes on Michael Phelps in the 200m medley at 11:01pm.</p>
+					</div>
+				</li>
+				<li class="item_slide">
+					<div>
+						<strong>Today News 5</strong>
+						<p>World no.1 table tennis star Ma Long has defeated his compatriot and London 2012 champion Zhang Jike 4-0 at Riocentro Pavillion 3. China now has 29 medals so far at Rio 2016.</p>
+					</div>
+				</li>
+			</ul>
+			<div class="btn_control_area">
+				<div class="btn_paging">
+					<button type="button" data-tag="paging" class="paging active">1</button>
+					<button type="button" data-tag="paging" class="paging">2</button>
+					<button type="button" data-tag="paging" class="paging">3</button>
+					<button type="button" data-tag="paging" class="paging">4</button>
+					<button type="button" data-tag="paging" class="paging">5</button>
+				</div>
+				<div class="btn_move">
+					<button type="button" data-tag="move" data-type="prev" class="btn_prev">prev</button>					
+					<button type="button" data-tag="move" data-type="next" class="btn_next">next</button>					
+				</div>
+			</div>
+			<!-- //btn_control_area -->
+		</div>
+		<!-- //wrap_slider -->
+
+	</div>
+	<!-- //wrap -->
+
+	<script>
+		var slider = {};
+		slider = new Slider({
+			loop : true
+		});
+	</script>
+
+	
+</body>
+</html>
