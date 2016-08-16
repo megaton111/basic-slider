@@ -21,6 +21,7 @@ var Slider = (function(){
 			val.max = val.itemLen,
 			val.x = [],
 			val.chk = false,
+			val.timerChk = false,
 			val.timer, val.wrapWidth, val.wrapHeight, val.itemWidth, val.itemHeight;
 		})();
 
@@ -128,6 +129,7 @@ var Slider = (function(){
 		for( var i=0, max=tag.btnAuto.length; i<max; i++ ){
 			tag.btnAuto[i].addEventListener('click', function(){
 				if( this.getAttribute('data-type') == 'play' ){
+					if( val.timerChk ) return;
 					autoSlide();
 				}else{
 					clearAutoSlide();
@@ -192,6 +194,7 @@ var Slider = (function(){
 	function autoSlide(){
 		clearInterval( val.timer );
 		timerBar();
+		val.timerChk = true;
 		val.timer = setInterval(function(){
 			val.idx ++;
 			if( val.idx >= val.itemLen ) val.idx = 0;
@@ -203,6 +206,7 @@ var Slider = (function(){
 	function clearAutoSlide(){
 		if( !opt.auto ) return;
 		if( typeof val.timer != undefined ) clearInterval( val.timer );
+		val.timerChk = false;
 		tag.wrapBar.innerHTML = '';
 	}
 
