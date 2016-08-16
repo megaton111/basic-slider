@@ -1,6 +1,6 @@
 # Javascript Slider
 
-## support
+## 지원
 * ie10 이상에서 지원합니다.
 * chrome, firefox 최신 버전
 
