@@ -72,7 +72,15 @@ html, body{height:100%;}
 .btn_move button.btn_next{
      right:0;
 }
-/* .btn_paging button:hover,
-.btn_paging button:focus{
-     color:#fff;
-} */
+.btn_auto{
+	position:absolute;
+	right:0;
+	bottom:5px;
+}
+.btn_auto button{
+	display:inline-block;
+	padding:5px;
+	margin:0 5px;
+	background-color:#000;
+	color:#fff;
+}

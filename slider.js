@@ -11,8 +11,8 @@ var Slider = (function(){
 			tag.wrapSlide = tag.wrap.querySelector( '.container_slide' ),
 			tag.itemSlide = tag.wrapSlide.querySelectorAll( '.item_slide' ),
 			tag.wrapControl = document.querySelector( '.btn_control_area' ),
-			tag.btnPaging = tag.wrapControl.querySelectorAll( '[data-tag=paging]' ),
-			tag.btnMove = tag.wrapControl.querySelectorAll( '[data-tag=move]' );
+			tag.btnMove = tag.wrapControl.querySelectorAll( '[data-tag=move]' ),
+			tag.btnPaging, tag.btnAuto;
 		})();
 
 		(function saveVal(){
@@ -20,58 +20,131 @@ var Slider = (function(){
 			val.itemLen = tag.itemSlide.length,
 			val.max = val.itemLen,
 			val.x = [],
-			val.wrapWidth, val.wrapHeight, val.itemWidth, val.itemHeight;
+			val.chk = false,
+			val.timer, val.wrapWidth, val.wrapHeight, val.itemWidth, val.itemHeight;
 		})();
 
 		(function setOption(){
-			opt.loop = option.loop || false
+			opt.loop = option.loop == undefined ? true : option.loop,
+			opt.paging = option.paging == undefined ? true : option.paging,
+			opt.auto = option.auto == undefined ? false : option.auto,
+			opt.autoStart = option.autoStart == undefined ? false : option.autoStart,
+			opt.duration = option.duration || 0.2,
+			opt.autoDelay = option.autoDelay || 3000
 		})();
 
-		(function setEvents(){
-			for( var i=0, max=tag.btnPaging.length; i<max; i++ ){
-				tag.btnPaging[i].addEventListener('click', paginBtnClickHandler );
-			}
+		(function setEvents(){			
 			for( var i=0, max=tag.btnMove.length; i<max; i++ ){
 				tag.btnMove[i].addEventListener('click', moveBtnClickHandler );	
 			}
-			window.addEventListener('resize', setLayout );
+			tag.wrapSlide.addEventListener('webkitTransitionEnd', movingEndAct );
+			tag.wrapSlide.addEventListener('transitionend', movingEndAct );
+			window.addEventListener('resize', setLayout );			
 		})();
 
 		(function initFunc(){
+
 			tag.itemSlide[0].classList.add( 'active-slide' );
 			setLayout();
-			console.log( opt );
-		})();
+			setPagingElement();
+			setAutoBtnElement()
+			if( opt.auto && opt.autoStart ){ autoSlide() };
 
+		})();
 
 	};
 
 	function setLayout(){
-	
+
 		val.itemWidth = tag.itemSlide[0].offsetWidth;
 		val.itemHeight = tag.itemSlide[0].offsetHeight;
 		tag.wrap.style.height = val.itemHeight + 'px';
 		tag.wrapSlide.style.transform = 'translateX( -' + val.x[val.idx] + 'px )';
 		tag.wrapSlide.style.webkitTransform = 'translateX( -' + val.x[val.idx] + 'px )';
-		tag.wrapSlide.style.Transition = 'all 0s';
+		tag.wrapSlide.style.transition = 'all 0s';
 		tag.wrapSlide.style.webkitTransition = 'all 0s';
 
 		for( var i=0; i<val.max; i++ ){
 			tag.itemSlide[i].style.left = val.itemWidth * i + 'px';
 			val.x[i] = val.itemWidth * i;
 		}
+
+	}
+
+	function setPagingElement(){
 		
+		if( !opt.paging ) return;
+
+		var $wrapPaging = document.createElement('div');
+		$wrapPaging.setAttribute('class','btn_paging');
+
+		for( var i=0, max=val.itemLen; i<max; i++ ){
+			var btn = document.createElement('button');
+			btn.setAttribute('type','button');
+			btn.setAttribute('data-tag','paging');
+			btn.setAttribute('class','paging');
+			btn.textContent = i + 1;
+			$wrapPaging.appendChild( btn );
+		}
+
+		tag.wrapControl.appendChild( $wrapPaging );
+		tag.btnPaging = tag.wrapControl.querySelectorAll( '[data-tag=paging]' );
+		tag.btnPaging[0].classList.add( 'active' );
+
+		for( var i=0, max=tag.btnPaging.length; i<max; i++ ){
+			tag.btnPaging[i].addEventListener('click', paginBtnClickHandler );
+		}
+
+	}
+
+	function setAutoBtnElement() {
+		
+		if( !opt.auto ) return;
+
+		var $wrapAuto = document.createElement('div'),
+			$btnPlay = document.createElement('button'),
+			$btnStop = document.createElement('button');
+
+		$wrapAuto.setAttribute('class','btn_auto');
+		$btnPlay.setAttribute('class','btn_play');
+		$btnPlay.setAttribute('data-type','play');
+		$btnPlay.setAttribute('data-tag','auto');
+		$btnPlay.textContent = 'play';
+		$btnStop.setAttribute('class','btn_stop');
+		$btnStop.setAttribute('data-type','stop');
+		$btnStop.setAttribute('data-tag','auto');
+		$btnStop.textContent = 'stop';
+
+		$wrapAuto.appendChild( $btnPlay );
+		$wrapAuto.appendChild( $btnStop );
+		tag.wrapControl.appendChild( $wrapAuto );
+
+		tag.btnAuto = tag.wrapControl.querySelectorAll( '[data-tag=auto]' );
+		for( var i=0, max=tag.btnAuto.length; i<max; i++ ){
+			tag.btnAuto[i].addEventListener('click', function(){
+				if( this.getAttribute('data-type') == 'play' ){
+					autoSlide();
+				}else{
+					clearAutoSlide();
+				}
+			})
+		}
 
 	}
 
 	function paginBtnClickHandler(){
+
 		var btn = this;
+		
+		if( val.chk || btn.classList.contains( 'active' ) ) return;
+
 		[].some.call( tag.btnPaging, function( item, index, array ){
 			if( item === btn ) {
 				val.idx = index
 			};
 		});
-		console.log( val.idx );
+
+		clearAutoSlide();
 		moving( val.idx );
 	};
 
@@ -79,6 +152,8 @@ var Slider = (function(){
 		
 		var dataType = this.getAttribute( 'data-type' ),
 			chkLoop = false;
+
+		if( val.chk ) return;
 
 		if( !opt.loop ){			
 			if( val.idx == val.itemLen - 1 && dataType == 'next' ) chkLoop = true;
@@ -94,16 +169,38 @@ var Slider = (function(){
 			val.idx --;
 			if( val.idx < 0 ) val.idx = val.itemLen - 1; 
 		}
+
+		clearAutoSlide();
 		moving( val.idx );		
 	}
 
-	function moving( idx ){
+	function moving( idx ){	
+		val.chk = true;
 		tag.wrapSlide.style.transform = 'translateX( -' + val.x[idx] + 'px )';
-		tag.wrapSlide.style.transform = 'translateX( -' + val.x[idx] + 'px )';
-		tag.wrapSlide.style.Transition = 'all .3s';
-		tag.wrapSlide.style.webkitTransition = 'all .3s';		
+		tag.wrapSlide.style.webkitTransform = 'translateX( -' + val.x[idx] + 'px )';
+		tag.wrapSlide.style.transition = 'all ' + opt.duration+'s';
+		tag.wrapSlide.style.webkitTransition = 'all ' + opt.duration+'s';
 		addClassActiveItem( idx );
 		addClassActivePaging( idx );
+
+	}
+
+	function autoSlide(){
+		clearInterval( val.timer );
+		val.timer = setInterval(function(){
+			val.idx ++;
+			if( val.idx >= val.itemLen ) val.idx = 0;
+			moving( val.idx );
+		}, opt.autoDelay );
+	}
+
+	function clearAutoSlide(){
+		if( !opt.auto ) return;
+		if( typeof val.timer != undefined ) clearInterval( val.timer );
+	}
+
+	function movingEndAct(){
+		val.chk = false;
 	}
 
 	function addClassActiveItem( idx ){
@@ -117,6 +214,9 @@ var Slider = (function(){
 	}
 
 	function addClassActivePaging( idx ){
+		
+		if( !opt.paging ) return;
+
 		for( var i=0, max=val.itemLen; i<max; i++ ){			
 			if( i == idx ) {
 				tag.btnPaging[i].classList.add( 'active' );
@@ -125,7 +225,6 @@ var Slider = (function(){
 			}
 		}	
 	}
-
 
 	return sliderHandler;
 

@@ -45,13 +45,6 @@
 				</li>
 			</ul>
 			<div class="btn_control_area">
-				<div class="btn_paging">
-					<button type="button" data-tag="paging" class="paging active">1</button>
-					<button type="button" data-tag="paging" class="paging">2</button>
-					<button type="button" data-tag="paging" class="paging">3</button>
-					<button type="button" data-tag="paging" class="paging">4</button>
-					<button type="button" data-tag="paging" class="paging">5</button>
-				</div>
 				<div class="btn_move">
 					<button type="button" data-tag="move" data-type="prev" class="btn_prev">prev</button>
 					<button type="button" data-tag="move" data-type="next" class="btn_next">next</button>
@@ -65,10 +58,10 @@
 	<!-- //wrap -->
 
 	<script>
+		
 		var slider = {};
-		slider = new Slider({
-			loop : true
-		});
+		slider = new Slider({ loop : true, duration : .3, paging : true, auto : true, autoDelay : 3000, autoStart : false });
+
 	</script>
 
 
